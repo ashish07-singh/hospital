@@ -15,7 +15,7 @@ const app = express();
 // ✅ CORS middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend URL
+    origin: process.env.FRONTEND_URL, // your frontend URL
     credentials: true,
   })
 );
@@ -27,6 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ Routes
 app.use('/api/auth', authroutes);
 app.use('/api/contact', contactrouter);
+
+app.get('/', (req, res) => {
+  res.send('Server running!'); 
+})
 
 // ✅ DB Connection and Server Start
 connectDB();
