@@ -36,7 +36,7 @@ const Gallery = () => {
     {
       id: 5,
       category: "equipment",
-      image: "/images/gallery-diagnostic.jpg",
+      image: "/images/recovery.jpg",
       title: "Diagnostic Equipment",
       description: "Advanced diagnostic imaging and testing equipment",
     },
