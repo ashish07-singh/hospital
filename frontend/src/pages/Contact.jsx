@@ -19,7 +19,7 @@ const Contact = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/contact/submit`, form);
+      const res = await axios.post(`${BACKEND_URL}api/contact/submit`, form);
       if (res.status === 201) {
         setSubmitted(true);
         setForm({
