@@ -13,12 +13,7 @@ dotenv.config();
 const app = express();
 
 // ✅ CORS middleware
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL, // your frontend URL
-    credentials: true,
-  })
-);
+app.use(cors())
 
 // ✅ JSON & URL-encoded body parser
 app.use(express.json());
@@ -28,9 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authroutes);
 app.use('/api/contact', contactrouter);
 
-app.get('/', (req, res) => {
-  res.send('Server running!'); 
-})
+app.get("/", (req, res) => {
+  res.send("API Working")
+});
 
 // ✅ DB Connection and Server Start
 connectDB();
