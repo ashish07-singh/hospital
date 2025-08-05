@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Chat Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            height: calc(100vh - 140px);
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .panel-content {
+            padding: 20px;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-item {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .chat-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .chat-item.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .chat-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chat-user {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .chat-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .chat-preview {
+            font-size: 0.9rem;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: calc(100% - 120px);
+            overflow-y: auto;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background: #007bff;
+            color: white;
+            align-self: flex-end;
+            margin-left: 20%;
+        }
+
+        .message.admin {
+            background: #28a745;
+            color: white;
+            align-self: flex-start;
+            margin-right: 20%;
+        }
+
+        .message.bot {
+            background: #6c757d;
+            color: white;
+            align-self: flex-start;
+            margin-right: 20%;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .reply-form {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .reply-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .reply-button {
+            padding: 12px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .reply-button:hover {
+            background: #218838;
+        }
+
+        .reply-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .user-item {
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .user-status {
+            font-size: 0.8rem;
+            color: #28a745;
+        }
+
+        .user-status.offline {
+            color: #6c757d;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px 20px;
+        }
+
+        .refresh-btn {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .refresh-btn:hover {
+            background: #0056b3;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #28a745;
+        }
+
+        .status-offline {
+            background: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Hospital Chat Admin</h1>
+        <p>Manage customer support conversations and respond to users</p>
+    </div>
+
+    <div class="container">
+        <!-- Active Chats -->
+        <div class="panel">
+            <div class="panel-header">
+                Active Chats
+                <button class="refresh-btn" onclick="loadChats()">🔄 Refresh</button>
+            </div>
+            <div class="panel-content">
+                <div id="chatList" class="chat-list">
+                    <div class="no-data">Loading chats...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="panel">
+            <div class="panel-header">
+                Chat Messages
+                <span id="selectedChatInfo"></span>
+            </div>
+            <div class="panel-content">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="no-data">Select a chat to view messages</div>
+                </div>
+                <div class="reply-form" id="replyForm" style="display: none;">
+                    <input type="text" id="replyInput" class="reply-input" placeholder="Type your reply..." />
+                    <button onclick="sendReply()" class="reply-button">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users -->
+        <div class="panel">
+            <div class="panel-header">
+                Registered Users
+                <button class="refresh-btn" onclick="loadUsers()">🔄 Refresh</button>
+            </div>
+            <div class="panel-content">
+                <div id="userList" class="user-list">
+                    <div class="no-data">Loading users...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api/chatbot';
+        let selectedChatId = null;
+        let chats = [];
+        let users = [];
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', () => {
+            loadChats();
+            loadUsers();
+        });
+
+        async function loadChats() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/chats`);
+                const data = await response.json();
+                chats = data.chats || [];
+                displayChats();
+            } catch (error) {
+                console.error('Error loading chats:', error);
+                document.getElementById('chatList').innerHTML = '<div class="no-data">Error loading chats</div>';
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/users`);
+                const data = await response.json();
+                users = data.users || [];
+                displayUsers();
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('userList').innerHTML = '<div class="no-data">Error loading users</div>';
+            }
+        }
+
+        function displayChats() {
+            const chatList = document.getElementById('chatList');
+            
+            if (chats.length === 0) {
+                chatList.innerHTML = '<div class="no-data">No active chats</div>';
+                return;
+            }
+
+            chatList.innerHTML = chats.map(chat => `
+                <div class="chat-item ${selectedChatId === chat.sessionId ? 'active' : ''}" 
+                     onclick="selectChat('${chat.sessionId}')">
+                    <div class="chat-item-header">
+                        <div class="chat-user">
+                            ${chat.userId ? chat.userId.name : chat.userEmail || 'Anonymous'}
+                        </div>
+                        <div class="chat-time">
+                            ${formatTime(chat.lastMessage)}
+                        </div>
+                    </div>
+                    <div class="chat-preview">
+                        ${chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'No messages'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayUsers() {
+            const userList = document.getElementById('userList');
+            
+            if (users.length === 0) {
+                userList.innerHTML = '<div class="no-data">No registered users</div>';
+                return;
+            }
+
+            userList.innerHTML = users.map(user => `
+                <div class="user-item">
+                    <div class="user-name">
+                        <span class="status-indicator ${user.isOnline ? 'status-online' : 'status-offline'}"></span>
+                        ${user.name}
+                    </div>
+                    <div class="user-email">${user.email}</div>
+                    <div class="user-status ${user.isOnline ? '' : 'offline'}">
+                        ${user.isOnline ? 'Online' : 'Offline'} • Last message: ${user.lastMessage ? formatTime(user.lastMessage) : 'Never'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function selectChat(sessionId) {
+            selectedChatId = sessionId;
+            displayChats();
+            
+            try {
+                const response = await fetch(`${API_BASE}/chat/${sessionId}`);
+                const data = await response.json();
+                displayMessages(data.messages);
+                
+                const selectedChat = chats.find(c => c.sessionId === sessionId);
+                const userInfo = selectedChat?.userId ? 
+                    `${selectedChat.userId.name} (${selectedChat.userId.email})` : 
+                    selectedChat?.userEmail || 'Anonymous';
+                
+                document.getElementById('selectedChatInfo').textContent = ` - ${userInfo}`;
+                document.getElementById('replyForm').style.display = 'flex';
+            } catch (error) {
+                console.error('Error loading chat messages:', error);
+                document.getElementById('chatMessages').innerHTML = '<div class="no-data">Error loading messages</div>';
+            }
+        }
+
+        function displayMessages(messages) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            if (messages.length === 0) {
+                chatMessages.innerHTML = '<div class="no-data">No messages</div>';
+                return;
+            }
+
+            chatMessages.innerHTML = messages.map(message => `
+                <div class="message ${message.from}">
+                    <div>${message.text}</div>
+                    <div class="message-time">${formatTime(message.timestamp)}</div>
+                </div>
+            `).join('');
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendReply() {
+            const replyInput = document.getElementById('replyInput');
+            const reply = replyInput.value.trim();
+            
+            if (!reply || !selectedChatId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sessionId: selectedChatId,
+                        reply: reply
+                    })
+                });
+                
+                if (response.ok) {
+                    replyInput.value = '';
+                    // Reload the chat messages
+                    selectChat(selectedChatId);
+                } else {
+                    alert('Failed to send reply');
+                }
+            } catch (error) {
+                console.error('Error sending reply:', error);
+                alert('Error sending reply');
+            }
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return 'Never';
+            const date = new Date(timestamp);
+            return date.toLocaleString();
+        }
+
+        // Auto-refresh every 10 seconds
+        setInterval(() => {
+            loadChats();
+            loadUsers();
+        }, 10000);
+
+        // Handle Enter key in reply input
+        document.getElementById('replyInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendReply();
+            }
+        });
+    </script>
+</body>
+</html> 

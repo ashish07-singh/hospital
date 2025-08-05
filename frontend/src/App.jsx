@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Chatbot from "./components/Chatbot";
 
 import Home from "./pages/Home";
 import Services from "./pages/Services";
@@ -33,8 +34,10 @@ const App = () => {
         </Routes>
       </main>
       <Footer />
+      <Chatbot />
     </div>
   );
 };
 
 export default App;
+
