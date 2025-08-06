@@ -16,37 +16,43 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS middleware - Allow both ports
+// ✅ CORS middleware - Allow local + deployed frontend
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow both ports
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'https://hmsc-ashish07-singhs-projects.vercel.app'  // ✅ Your deployed frontend
+    ],
     credentials: true,
   })
 );
-// ✅ JSON & URL-encoded body parser
+
+// ✅ Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ Routes
 app.use('/api/auth', authroutes);
 app.use('/api/contact', contactrouter);
-app.use("/api/chatbot", chatbotRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
-// Serve admin interface
+// ✅ Serve admin page
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+// ✅ Default route
 app.get("/", (req, res) => {
-  res.send("API Working")
+  res.send("API Working");
 });
 
-// ✅ DB Connection and Server Start
+// ✅ Connect to DB and start server
 connectDB();
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`🏥 Admin panel available at: http://localhost:${PORT}/admin`);
-  console.log(`🌐 CORS enabled for: http://localhost:5173 and http://localhost:5174`);
+  console.log(`🌐 CORS enabled for: http://localhost:5173, http://localhost:5174, and deployed frontend`);
 });
