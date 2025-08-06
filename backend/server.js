@@ -22,7 +22,9 @@ app.use(
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'https://hmsc-ashish07-singhs-projects.vercel.app'  // ✅ Your deployed frontend
+      'https://hmsc-ashish07-singhs-projects.vercel.app', // frontend deployed
+      'https://hospital-git-main-ashish07-singhs-projects.vercel.app', // backend (preview/alias)
+      'https://hospital-rho-azure.vercel.app',
     ],
     credentials: true,
   })
